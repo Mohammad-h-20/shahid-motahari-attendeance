@@ -112,7 +112,6 @@ export default function AddClassModal({
             </label>
             <input
               type="text"
-              placeholder="مثال: کلاس ۷۰۴ (شهید چمران)"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -146,7 +145,6 @@ export default function AddClassModal({
               </label>
               <input
                 type="text"
-                placeholder="مثال: ۱۰۴"
                 value={room}
                 onChange={(e) => setRoom(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -158,7 +156,6 @@ export default function AddClassModal({
               </label>
               <input
                 type="text"
-                placeholder="مثال: استاد فلاح"
                 value={teacher}
                 onChange={(e) => setTeacher(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"

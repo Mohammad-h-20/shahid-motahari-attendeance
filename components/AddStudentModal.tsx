@@ -161,7 +161,6 @@ export default function AddStudentModal({
               </label>
               <input
                 type="text"
-                placeholder="مثال: علی"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 required
@@ -174,7 +173,6 @@ export default function AddStudentModal({
               </label>
               <input
                 type="text"
-                placeholder="مثال: محمدی"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 required
@@ -224,7 +222,6 @@ export default function AddStudentModal({
             </label>
             <input
               type="tel"
-              placeholder="مثال: 09123456789"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required
@@ -240,7 +237,6 @@ export default function AddStudentModal({
               </label>
               <input
                 type="text"
-                placeholder="مثال: 0012345678"
                 value={nationalId}
                 onChange={(e) => setNationalId(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-left font-mono"
@@ -253,7 +249,6 @@ export default function AddStudentModal({
               </label>
               <input
                 type="text"
-                placeholder="مثال: 140301"
                 value={studentNumber}
                 onChange={(e) => setStudentNumber(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-left font-mono"

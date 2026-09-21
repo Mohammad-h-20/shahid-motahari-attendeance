@@ -83,8 +83,9 @@ export default function GradePage() {
   );
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
-      {/* Top Breadcrumb and Header */}
+    <>
+      <div className="space-y-8 animate-in fade-in duration-300">
+        {/* Top Breadcrumb and Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-1.5">
@@ -234,8 +235,7 @@ export default function GradePage() {
           })}
         </div>
       )}
-
-      {/* Add Class Modal pre-scoped to this grade */}
+    </div>      {/* Add Class Modal pre-scoped to this grade */}
       {grade && (
         <AddClassModal
           isOpen={addClassOpen}
@@ -256,6 +256,6 @@ export default function GradePage() {
           defaultGradeId={grade.id}
         />
       )}
-    </div>
+    </>
   );
 }
