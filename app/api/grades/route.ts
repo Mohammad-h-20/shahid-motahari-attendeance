@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const grades = await prisma.grade.findMany({
+    let grades = await prisma.grade.findMany({
       orderBy: { order: "asc" },
       include: {
         classes: {
@@ -17,6 +17,29 @@ export async function GET() {
         },
       },
     });
+
+    if (grades.length === 0) {
+      await prisma.grade.createMany({
+        data: [
+          { name: "پایه هفتم", code: "grade-7", order: 1 },
+          { name: "پایه هشتم", code: "grade-8", order: 2 },
+          { name: "پایه نهم", code: "grade-9", order: 3 },
+        ]
+      });
+      
+      grades = await prisma.grade.findMany({
+        orderBy: { order: "asc" },
+        include: {
+          classes: {
+            include: {
+              _count: {
+                select: { students: true },
+              },
+            },
+          },
+        },
+      });
+    }
 
     const formatted = grades.map((g) => {
       const totalStudents = g.classes.reduce(
