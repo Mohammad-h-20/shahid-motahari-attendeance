@@ -174,7 +174,7 @@ export default function SMSModal({
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <span>ارسال پیامک واقعی به اولیا</span>
+                <span>ارسال پیام به اولیا</span>
                 <span className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-extrabold px-2 py-0.5 rounded-full">
                   وب‌سرویس کاوه نگار
                 </span>

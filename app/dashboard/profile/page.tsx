@@ -228,7 +228,7 @@ export default function ProfilePage() {
                 </span>
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                ارسال پیامک واقعی غیبت و تاخیر به تلفن همراه اولیا
+                ارسال پیام به اولیا
               </p>
             </div>
           </div>
