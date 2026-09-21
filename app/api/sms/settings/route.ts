@@ -1,60 +1,110 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
-import { cookies } from "next/headers";
+import { getKavenegarAccountInfo } from "@/lib/kavenegar";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const adminUser = await prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
       orderBy: { createdAt: "asc" },
       select: {
-        smsApiKey: true,
-        smsSender: true,
+        kavenegarApiKey: true,
+        kavenegarSender: true,
         smsMode: true,
-        smsTemplateAbsent: true,
-        smsTemplateLate: true,
+        lookupTemplateAbsent: true,
+        lookupTemplateLate: true,
       },
     });
 
+    let balanceInfo: any = null;
+    let isConnected = false;
+
+    const apiKey = user?.kavenegarApiKey || process.env.KAVENEGAR_API_KEY;
+    if (apiKey) {
+      try {
+        balanceInfo = await getKavenegarAccountInfo(apiKey);
+        isConnected = true;
+      } catch (e: any) {
+        console.warn("Could not fetch Kavenegar balance:", e.message);
+      }
+    }
+
     return NextResponse.json({
-      apiKey: adminUser?.smsApiKey || "",
-      sender: adminUser?.smsSender || "",
-      mode: adminUser?.smsMode || "NORMAL",
-      templateAbsent: adminUser?.smsTemplateAbsent || "",
-      templateLate: adminUser?.smsTemplateLate || "",
+      configured: !!apiKey,
+      apiKey: user?.kavenegarApiKey ? `${user.kavenegarApiKey.slice(0, 6)}...${user.kavenegarApiKey.slice(-4)}` : "",
+      rawApiKey: user?.kavenegarApiKey || "",
+      sender: user?.kavenegarSender || "2000660110",
+      smsMode: user?.smsMode || "NORMAL",
+      lookupTemplateAbsent: user?.lookupTemplateAbsent || "",
+      lookupTemplateLate: user?.lookupTemplateLate || "",
+      balanceInfo,
+      isConnected,
     });
   } catch (error) {
-    return NextResponse.json({ error: "خطا در دریافت تنظیمات" }, { status: 500 });
+    console.error("Error fetching SMS settings:", error);
+    return NextResponse.json(
+      { error: "خطا در دریافت تنظیمات پیامک" },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const authCookie = cookies().get("school_auth")?.value;
-    if (!authCookie) {
-      return NextResponse.json({ error: "عدم دسترسی" }, { status: 401 });
+    const body = await request.json();
+    const {
+      kavenegarApiKey,
+      kavenegarSender,
+      smsMode = "NORMAL",
+      lookupTemplateAbsent,
+      lookupTemplateLate,
+    } = body;
+
+    const user = await prisma.user.findFirst({
+      orderBy: { createdAt: "asc" },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "کاربر یافت نشد." }, { status: 404 });
     }
 
-    const userId = authCookie.replace("authenticated_", "");
-    
-    const body = await request.json();
-    const { apiKey, sender, mode, templateAbsent, templateLate } = body;
+    // Optional: test API key with Kavenegar if provided
+    let accountInfo: any = null;
+    if (kavenegarApiKey && kavenegarApiKey.trim()) {
+      try {
+        accountInfo = await getKavenegarAccountInfo(kavenegarApiKey.trim());
+      } catch (err: any) {
+        return NextResponse.json(
+          {
+            error: `کلید کاوه نگار نامعتبر است: ${err.message || "امکان اتصال وجود ندارد"}`,
+          },
+          { status: 400 }
+        );
+      }
+    }
 
-    const user = await prisma.user.update({
-      where: { id: userId },
+    await prisma.user.update({
+      where: { id: user.id },
       data: {
-        smsApiKey: apiKey,
-        smsSender: sender,
-        smsMode: mode,
-        smsTemplateAbsent: templateAbsent,
-        smsTemplateLate: templateLate,
+        kavenegarApiKey: kavenegarApiKey ? kavenegarApiKey.trim() : null,
+        kavenegarSender: kavenegarSender ? kavenegarSender.trim() : null,
+        smsMode,
+        lookupTemplateAbsent: lookupTemplateAbsent ? lookupTemplateAbsent.trim() : null,
+        lookupTemplateLate: lookupTemplateLate ? lookupTemplateLate.trim() : null,
       },
     });
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
+    return NextResponse.json({
+      success: true,
+      message: "تنظیمات وب‌سرویس کاوه نگار با موفقیت ذخیره و اعتبارسنجی شد.",
+      accountInfo,
+    });
+  } catch (error: any) {
     console.error("Error saving SMS settings:", error);
-    return NextResponse.json({ error: "خطا در ذخیره تنظیمات" }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || "خطا در ذخیره‌سازی تنظیمات پیامک" },
+      { status: 500 }
+    );
   }
 }

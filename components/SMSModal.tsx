@@ -41,7 +41,7 @@ export default function SMSModal({
 }: SMSModalProps) {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
-  const [smsIrConfigured, setSmsIrConfigured] = useState(false);
+  const [kavenegarConfigured, setKavenegarConfigured] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [senderInput, setSenderInput] = useState("2000660110");
   const [showConfig, setShowConfig] = useState(false);
@@ -50,16 +50,16 @@ export default function SMSModal({
   const [error, setError] = useState("");
   const [sendResult, setSendResult] = useState<any>(null);
 
-  // Check if SmsIr is configured
+  // Check if Kavenegar is configured
   const checkConfig = async () => {
     try {
       const res = await fetch("/api/sms/settings");
       const data = await res.json();
       if (data.configured) {
-        setSmsIrConfigured(true);
+        setKavenegarConfigured(true);
         if (data.sender) setSenderInput(data.sender);
       } else {
-        setSmsIrConfigured(false);
+        setKavenegarConfigured(false);
       }
     } catch (e) {
       console.error(e);
@@ -77,11 +77,11 @@ export default function SMSModal({
 
   if (!isOpen) return null;
 
-  // Save sms.ir API key
+  // Save Kavenegar API key
   const handleSaveConfig = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!apiKeyInput.trim()) {
-      setError("لطفاً کلید وب‌سرویس sms.ir را وارد کنید.");
+      setError("لطفاً کلید وب‌سرویس کاوه نگار را وارد کنید.");
       return;
     }
 
@@ -93,19 +93,19 @@ export default function SMSModal({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          apiKey: apiKeyInput.trim(),
-          sender: senderInput.trim() || "30000000",
+          kavenegarApiKey: apiKeyInput.trim(),
+          kavenegarSender: senderInput.trim() || "2000660110",
         }),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "خطا در اتصال به sms.ir");
+        throw new Error(data.error || "خطا در اتصال به کاوه نگار");
       }
 
-      setSmsIrConfigured(true);
+      setKavenegarConfigured(true);
       setShowConfig(false);
-      setConfigSuccess("کلید sms.ir با موفقیت ذخیره و اعتبارسنجی شد!");
+      setConfigSuccess("کلید کاوه نگار با موفقیت ذخیره و اعتبارسنجی شد!");
       setTimeout(() => setConfigSuccess(""), 4000);
     } catch (err: any) {
       setError(err.message);
@@ -176,7 +176,7 @@ export default function SMSModal({
               <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <span>ارسال پیامک واقعی به اولیا</span>
                 <span className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-extrabold px-2 py-0.5 rounded-full">
-                  وب‌سرویس sms.ir
+                  وب‌سرویس کاوه نگار
                 </span>
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -189,14 +189,14 @@ export default function SMSModal({
             type="button"
             onClick={() => setShowConfig(!showConfig)}
             className="p-2 text-slate-500 hover:text-emerald-600 dark:text-slate-400 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold flex items-center gap-1 transition-colors"
-            title="تنظیمات وب‌سرویس sms.ir"
+            title="تنظیمات وب‌سرویس کاوه نگار"
           >
             <Settings className="w-4 h-4" />
             <span className="hidden sm:inline">تنظیم کلید</span>
           </button>
         </div>
 
-        {/* SmsIr Quick Config Form (if toggled or needed) */}
+        {/* Kavenegar Quick Config Form (if toggled or needed) */}
         {showConfig && (
           <form
             onSubmit={handleSaveConfig}
@@ -205,7 +205,7 @@ export default function SMSModal({
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <Key className="w-4 h-4 text-emerald-600" />
-                <span>تنظیم کلید وب‌سرویس sms.ir (API Key)</span>
+                <span>تنظیم کلید وب‌سرویس کاوه نگار (API Key)</span>
               </span>
               <a
                 href="https://panel.kavenegar.com"
@@ -213,7 +213,7 @@ export default function SMSModal({
                 rel="noreferrer"
                 className="text-[11px] text-emerald-600 hover:underline flex items-center gap-1"
               >
-                <span>پنل sms.ir</span>
+                <span>پنل کاوه نگار</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
@@ -256,7 +256,7 @@ export default function SMSModal({
                 className="px-4 py-1.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-colors disabled:opacity-50 flex items-center gap-1.5"
               >
                 {savingKey ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
-                <span>تایید و اتصال به sms.ir</span>
+                <span>تایید و اتصال به کاوه نگار</span>
               </button>
             </div>
           </form>
@@ -283,7 +283,7 @@ export default function SMSModal({
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <h4 className="text-base font-bold text-slate-900 dark:text-white">
-              پیامک‌ها با موفقیت به سرور sms.ir تحویل داده شدند
+              پیامک‌ها با موفقیت به سرور کاوه نگار تحویل داده شدند
             </h4>
             <p className="text-xs text-slate-500 max-w-sm">
               تعداد {toPersianDigits(sendResult?.successCount || studentsWithIssues.length)} پیامک موفق به شماره همراه اولیای دانش‌آموزان ارسال شد.
@@ -362,8 +362,8 @@ export default function SMSModal({
 
                 <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 flex-shrink-0">
                   <div className="text-[11px] text-slate-400 flex items-center gap-1">
-                    <span className={`w-2 h-2 rounded-full ${smsIrConfigured ? "bg-emerald-500" : "bg-amber-400 animate-pulse"}`}></span>
-                    <span>{smsIrConfigured ? "وب‌سرویس sms.ir فعال است" : "کلید sms.ir هنوز تنظیم نشده است"}</span>
+                    <span className={`w-2 h-2 rounded-full ${kavenegarConfigured ? "bg-emerald-500" : "bg-amber-400 animate-pulse"}`}></span>
+                    <span>{kavenegarConfigured ? "وب‌سرویس کاوه نگار فعال است" : "کلید کاوه نگار هنوز تنظیم نشده است"}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
