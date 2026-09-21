@@ -37,6 +37,19 @@ export async function POST(request: Request) {
     const rawPassword = String(password).trim();
     const cleanPassword = toEnglishDigits(rawPassword).trim();
 
+    // If the database is completely empty (e.g. fresh cloud deployment), create the default admin
+    const totalUsers = await prisma.user.count();
+    if (totalUsers === 0) {
+      await prisma.user.create({
+        data: {
+          username: "admin",
+          password: "admin1234",
+          fullName: "مدیریت دبیرستان دخترانه شهید مطهری",
+          role: "ADMIN"
+        }
+      });
+    }
+
     // Look up user by username (matching either english or raw)
     const user = await prisma.user.findFirst({
       where: {
