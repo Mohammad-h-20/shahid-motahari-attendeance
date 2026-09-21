@@ -147,14 +147,14 @@ export default function ProfilePage() {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "خطا در اتصال به کاوه نگار");
+        throw new Error(data.error || "خطا در اتصال به sms.ir");
       }
 
       setSmsSuccessMsg(data.message || "تنظیمات وب‌سرویس پیامک با موفقیت ذخیره شد.");
       setSmsConnected(true);
       if (data.accountInfo) setSmsBalance(data.accountInfo);
     } catch (err: any) {
-      setSmsErrorMsg(err.message || "خطا در ذخیره تنظیمات کاوه نگار");
+      setSmsErrorMsg(err.message || "خطا در ذخیره تنظیمات sms.ir");
     } finally {
       setSavingSms(false);
     }
@@ -208,7 +208,7 @@ export default function ProfilePage() {
         <div className="text-left hidden sm:block">
           <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full ${smsConnected ? "bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300" : "bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300"}`}>
             <span className={`w-2 h-2 rounded-full ${smsConnected ? "bg-emerald-500" : "bg-amber-500 animate-pulse"}`}></span>
-            <span>{smsConnected ? "کاوه نگار متصل" : "کاوه نگار در انتظار کلید"}</span>
+            <span>{smsConnected ? "sms.ir متصل" : "sms.ir در انتظار کلید"}</span>
           </span>
         </div>
       </div>
@@ -222,9 +222,9 @@ export default function ProfilePage() {
             </div>
             <div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <span>تنظیمات وب‌سرویس پیامک کاوه نگار</span>
+                <span>تنظیمات وب‌سرویس پیامک sms.ir</span>
                 <span className="text-[10px] bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded-md font-bold">
-                  Kavenegar SMS API
+                  SMS.ir API
                 </span>
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -234,12 +234,12 @@ export default function ProfilePage() {
           </div>
 
           <a
-            href="https://panel.kavenegar.com"
+            href="https://panel.sms.ir"
             target="_blank"
             rel="noreferrer"
             className="text-xs text-blue-600 hover:text-blue-700 font-bold flex items-center gap-1 hover:underline"
           >
-            <span>ورود به پنل کاوه نگار</span>
+            <span>ورود به پنل sms.ir</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
@@ -262,10 +262,7 @@ export default function ProfilePage() {
           <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-100 dark:border-blue-900 flex items-center justify-between">
             <div className="flex items-center gap-2.5 text-xs text-blue-900 dark:text-blue-200 font-bold">
               <Coins className="w-4 h-4 text-blue-600" />
-              <span>اعتبار باقیمانده حساب کاوه نگار:</span>
-            </div>
-            <div className="text-sm font-black font-mono text-blue-700 dark:text-blue-300">
-              {toPersianDigits(smsBalance.remaincredit || 0)} ریال
+              <span>اتصال به پنل sms.ir موفقیت آمیز بود.</span>
             </div>
           </div>
         )}
@@ -274,7 +271,7 @@ export default function ProfilePage() {
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
               <span>کلید وب‌سرویس اختصاصی (API Key) <span className="text-rose-500">*</span></span>
-              <span className="text-[11px] text-slate-400 font-normal">از منوی دسترسی وب‌سرویس در پنل کاوه نگار</span>
+              <span className="text-[11px] text-slate-400 font-normal">از منوی برنامه‌نویسان در پنل sms.ir</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
@@ -316,39 +313,39 @@ export default function ProfilePage() {
                 className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="NORMAL">ارسال متن عادی (پیش‌فرض)</option>
-                <option value="LOOKUP">ارسال بر اساس الگو/پترن (عبور از بلک‌لیست)</option>
+                <option value="PATTERN">ارسال بر اساس الگو/پترن سریع</option>
               </select>
             </div>
           </div>
 
-          {smsMode === "LOOKUP" && (
+          {smsMode === "PATTERN" && (
             <div className="p-3 bg-blue-50/50 dark:bg-blue-950/30 rounded-2xl border border-blue-200/60 dark:border-blue-800/60 space-y-3 animate-in fade-in">
               <div className="text-[11px] text-blue-800 dark:text-blue-300 font-semibold">
-                نام الگوهای ثبت‌شده در کاوه نگار را وارد کنید:
+                شناسه عددی الگوهای ثبت‌شده در sms.ir را وارد کنید (پارامترها باید NAME و DATE باشند):
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                    کد/نام الگوی غیبت (Template)
+                    شناسه الگوی غیبت (Template ID)
                   </label>
                   <input
                     type="text"
                     value={templateAbsent}
                     onChange={(e) => setTemplateAbsent(e.target.value)}
-                    placeholder="مثال: school-absent"
+                    placeholder="مثال: 100000"
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-mono text-left"
                     dir="ltr"
                   />
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                    کد/نام الگوی تاخیر (Template)
+                    شناسه الگوی تاخیر (Template ID)
                   </label>
                   <input
                     type="text"
                     value={templateLate}
                     onChange={(e) => setTemplateLate(e.target.value)}
-                    placeholder="مثال: school-late"
+                    placeholder="مثال: 100001"
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-mono text-left"
                     dir="ltr"
                   />
@@ -366,12 +363,12 @@ export default function ProfilePage() {
               {savingSms ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>در حال اتصال و بررسی کلید...</span>
+                  <span>در حال ذخیره...</span>
                 </>
               ) : (
                 <>
                   <ShieldCheck className="w-4 h-4" />
-                  <span>ذخیره و اعتبارسنجی در کاوه نگار</span>
+                  <span>ذخیره در sms.ir</span>
                 </>
               )}
             </button>

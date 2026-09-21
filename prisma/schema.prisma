@@ -13,11 +13,11 @@ model User {
   password              String
   fullName              String   @default("مدیریت مدرسه شهید مطهری")
   role                  String   @default("ADMIN")
-  kavenegarApiKey       String?  // کلید اختصاصی وب‌سرویس کاوه نگار
-  kavenegarSender       String?  // شماره خط اختصاصی ارسال پیامک مثلاً 2000660110
-  smsMode               String   @default("NORMAL") // "NORMAL" یا "LOOKUP"
-  lookupTemplateAbsent  String?  // نام قالب غیبت در کاوه نگار
-  lookupTemplateLate    String?  // نام قالب تاخیر در کاوه نگار
+  smsApiKey             String?  // کلید اختصاصی وب‌سرویس sms.ir
+  smsSender             String?  // شماره خط اختصاصی ارسال پیامک مثلاً 3000xxxx
+  smsMode               String   @default("NORMAL") // "NORMAL" یا "PATTERN"
+  smsTemplateAbsent     String?  // شناسه قالب غیبت در sms.ir
+  smsTemplateLate       String?  // شناسه قالب تاخیر در sms.ir
   createdAt             DateTime @default(now())
 }
 

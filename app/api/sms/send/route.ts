@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
-import { sendKavenegarSms, sendKavenegarLookup } from "@/lib/kavenegar";
+import { sendSmsIrNormal, sendSmsIrPattern } from "@/lib/sms";
 
 export async function POST(request: Request) {
   try {
@@ -14,25 +14,19 @@ export async function POST(request: Request) {
       );
     }
 
-    // 1. Get Kavenegar settings from user settings or env
+    // 1. Get sms.ir settings from user
     const adminUser = await prisma.user.findFirst({
       orderBy: { createdAt: "asc" },
     });
 
-    const apiKey =
-      adminUser?.kavenegarApiKey?.trim() ||
-      process.env.KAVENEGAR_API_KEY?.trim();
-
-    const sender =
-      adminUser?.kavenegarSender?.trim() ||
-      process.env.KAVENEGAR_SENDER?.trim() ||
-      "";
+    const apiKey = adminUser?.smsApiKey?.trim();
+    const sender = adminUser?.smsSender?.trim() || "";
 
     if (!apiKey) {
       return NextResponse.json(
         {
           error:
-            "کلید وب‌سرویس کاوه نگار (API Key) هنوز در سامانه تنظیم نشده است. لطفاً ابتدا در بخش پروفایل، کلید کاوه نگار خود را وارد نمایید.",
+            "کلید وب‌سرویس sms.ir (API Key) هنوز در سامانه تنظیم نشده است. لطفاً ابتدا در بخش پروفایل، کلید sms.ir خود را وارد نمایید.",
           needConfig: true,
         },
         { status: 400 }
@@ -59,73 +53,87 @@ export async function POST(request: Request) {
           phone: phone || "بدون شماره",
           studentName,
           status: "FAILED",
-          error: "شماره تلفن نامعتبر است",
+          error: "شماره موبایل نامعتبر است",
         });
         failedCount++;
         continue;
       }
 
       try {
-        if (mode === "LOOKUP") {
-          // Template / Pattern based send
-          const template =
-            status === "ABSENT"
-              ? adminUser?.lookupTemplateAbsent || "school-absent"
-              : adminUser?.lookupTemplateLate || "school-late";
-
-          const response = await sendKavenegarLookup({
-            apiKey,
-            receptor: phone,
-            template,
-            token: studentName.replace(/\s+/g, "."),
-            token2: date,
-            token3: delayMinutes ? String(delayMinutes) : undefined,
-          });
-
-          results.push({
-            phone,
-            studentName,
-            status: "SUCCESS",
-            messageId: response.entries?.[0]?.messageid,
-          });
-          successCount++;
-        } else {
-          // Standard text message send
-          let text = "";
-          if (customMessage) {
-            text = customMessage
-              .replace(/\{نام\}/g, studentName)
-              .replace(/\{تاریخ\}/g, date)
-              .replace(/\{کلاس\}/g, className || "")
-              .replace(/\{تاخیر\}/g, String(delayMinutes || 0));
-          } else if (status === "ABSENT") {
-            text = `ولی محترم ${studentName}،\nبه اطلاع می‌رساند فرزند شما در تاریخ ${date} در دبیرستان دخترانه شهید مطهری غایب بوده است.`;
-          } else {
-            text = `ولی محترم ${studentName}،\nبه اطلاع می‌رساند فرزند شما در تاریخ ${date} با ${delayMinutes} دقیقه تاخیر در دبیرستان دخترانه شهید مطهری حاضر شد.`;
+        if (mode === "NORMAL" || !adminUser?.smsTemplateAbsent) {
+          // Normal mode (Bulk send via Line Number)
+          let finalMessage = customMessage || "";
+          
+          if (!finalMessage) {
+            if (status === "ABSENT") {
+              finalMessage = `ولی محترم دانش‌آموز ${studentName}،\nفرزند شما امروز مورخ ${date} در کلاس ${className || ''} غایب می‌باشد.\nدبیرستان دوره اول شهید مطهری`;
+            } else if (status === "LATE") {
+              finalMessage = `ولی محترم دانش‌آموز ${studentName}،\nفرزند شما امروز مورخ ${date} با ${delayMinutes} دقیقه تاخیر وارد مدرسه شد.\nدبیرستان دوره اول شهید مطهری`;
+            } else {
+              finalMessage = `ولی محترم دانش‌آموز ${studentName}،\nفرزند شما امروز مورخ ${date} در مدرسه حاضر شد.\nدبیرستان دوره اول شهید مطهری`;
+            }
           }
 
-          const response = await sendKavenegarSms({
+          const res = await sendSmsIrNormal({
             apiKey,
-            sender: sender || undefined,
+            sender,
             receptor: phone,
-            message: text,
+            message: finalMessage,
           });
 
-          results.push({
-            phone,
-            studentName,
-            status: "SUCCESS",
-            messageId: response.entries?.[0]?.messageid,
+          if (res.status === 1) {
+            results.push({ phone, studentName, status: "SUCCESS" });
+            successCount++;
+          } else {
+            results.push({ phone, studentName, status: "FAILED", error: res.message || "خطای ارسال" });
+            failedCount++;
+          }
+
+        } else {
+          // Pattern / Template Mode
+          let templateIdStr = "";
+          let parameters: Array<{ name: string; value: string }> = [
+            { name: "NAME", value: studentName },
+            { name: "DATE", value: date }
+          ];
+
+          if (status === "ABSENT") {
+            templateIdStr = adminUser.smsTemplateAbsent;
+          } else if (status === "LATE") {
+            templateIdStr = adminUser.smsTemplateLate || adminUser.smsTemplateAbsent;
+            parameters.push({ name: "DELAY", value: String(delayMinutes) });
+          }
+
+          if (!templateIdStr) {
+            throw new Error("شناسه قالب (Template ID) تنظیم نشده است.");
+          }
+
+          const templateId = parseInt(templateIdStr, 10);
+          if (isNaN(templateId)) {
+            throw new Error("شناسه قالب باید عدد باشد.");
+          }
+
+          const res = await sendSmsIrPattern({
+            apiKey,
+            receptor: phone,
+            templateId,
+            parameters,
           });
-          successCount++;
+
+          if (res.status === 1) {
+            results.push({ phone, studentName, status: "SUCCESS" });
+            successCount++;
+          } else {
+            results.push({ phone, studentName, status: "FAILED", error: res.message || "خطا از سرور پیامک" });
+            failedCount++;
+          }
         }
       } catch (err: any) {
-        console.error(`Error sending SMS to ${phone}:`, err.message);
         results.push({
           phone,
           studentName,
           status: "FAILED",
-          error: err.message || "خطا در برقراری ارتباط با وب‌سرویس کاوه نگار",
+          error: err.message || "ارتباط با پنل پیامکی ناموفق بود.",
         });
         failedCount++;
       }
@@ -133,15 +141,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      successCount,
-      failedCount,
-      total: recipients.length,
+      summary: { total: recipients.length, success: successCount, failed: failedCount },
       results,
     });
-  } catch (error: any) {
-    console.error("SMS API Error:", error);
+  } catch (error) {
+    console.error("SMS Sending Error:", error);
     return NextResponse.json(
-      { error: error.message || "خطایی در فرآیند ارسال پیامک رخ داد." },
+      { error: "خطایی در برقراری ارتباط با وب‌سرویس پیامکی رخ داد." },
       { status: 500 }
     );
   }
