@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
 export async function POST(request: Request) {
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
         }
 
         // Find or Create Class
-        const classKey = ${matchedGradeId}_;
+        const classKey = `${matchedGradeId}_${className.trim()}`;
         let matchedClassId = "";
         if (classCache.has(classKey)) {
           matchedClassId = classCache.get(classKey)!;
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: تعداد  دانش‌آموز با موفقیت وارد شدند. ( خطا),
+      message: `تعداد ${successCount} دانش‌آموز با موفقیت وارد شدند. (${failedCount} خطا)`,
       details: { successCount, failedCount, errors }
     });
 
