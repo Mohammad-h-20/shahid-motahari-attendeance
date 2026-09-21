@@ -1,0 +1,82 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                    String   @id @default(uuid())
+  username              String   @unique
+  password              String
+  fullName              String   @default("مدیریت مدرسه شهید مطهری")
+  role                  String   @default("ADMIN")
+  kavenegarApiKey       String?  // کلید اختصاصی وب‌سرویس کاوه نگار
+  kavenegarSender       String?  // شماره خط اختصاصی ارسال پیامک مثلاً 2000660110
+  smsMode               String   @default("NORMAL") // "NORMAL" یا "LOOKUP"
+  lookupTemplateAbsent  String?  // نام قالب غیبت در کاوه نگار
+  lookupTemplateLate    String?  // نام قالب تاخیر در کاوه نگار
+  createdAt             DateTime @default(now())
+}
+
+model LoginHistory {
+  id          String   @id @default(uuid())
+  username    String?
+  ip          String
+  os          String?
+  browser     String?
+  status      String   // "SUCCESS" or "FAILED"
+  createdAt   DateTime @default(now())
+}
+
+model Grade {
+  id        String   @id @default(uuid())
+  name      String   // e.g. "پایه هفتم", "پایه هشتم", "پایه نهم"
+  code      String   @unique // e.g. "grade-7", "grade-8", "grade-9"
+  order     Int      @default(1)
+  classes   Class[]
+  createdAt DateTime @default(now())
+}
+
+model Class {
+  id          String       @id @default(uuid())
+  name        String       // e.g. "کلاس ۷۰۱ (شهید بهشتی)", "کلاس ۷۰۲ (شهید همت)"
+  room        String?      // شماره کلاس
+  teacher     String?      // دبیر راهنما / معلم
+  gradeId     String
+  grade       Grade        @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  students    Student[]
+  attendances Attendance[]
+  createdAt   DateTime     @default(now())
+}
+
+model Student {
+  id            String       @id @default(uuid())
+  firstName     String
+  lastName      String
+  nationalId    String?      // کد ملی
+  studentNumber String?      // شماره دانش‌آموزی
+  phone         String       // شماره همراه ولی / دانش‌آموز
+  classId       String
+  class         Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  attendances   Attendance[]
+  createdAt     DateTime     @default(now())
+}
+
+model Attendance {
+  id           String   @id @default(uuid())
+  date         String   // Jalali format: YYYY-MM-DD (e.g. 1405-06-17)
+  status       String   // "PRESENT" (حاضر), "ABSENT" (غایب), "LATE" (تاخیر), "EXCUSED" (موجه)
+  delayMinutes Int      @default(0) // مدت تاخیر به دقیقه
+  notes        String?  // توضیحات و علت
+  studentId    String
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  classId      String
+  class        Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([studentId, date])
+}
