@@ -15,10 +15,12 @@ import {
   Calendar,
   Sparkles,
   Trash2,
+  FileSpreadsheet,
 } from "lucide-react";
 import { toPersianDigits } from "@/lib/jalali";
 import AddClassModal from "@/components/AddClassModal";
 import AddStudentModal from "@/components/AddStudentModal";
+import ExcelImportModal from "@/components/ExcelImportModal";
 
 export default function GradePage() {
   const params = useParams();
@@ -29,6 +31,7 @@ export default function GradePage() {
   const [classes, setClasses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [addClassOpen, setAddClassOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [addStudentClassId, setAddStudentClassId] = useState<string | null>(null);
 
   const loadGradeData = async () => {
@@ -117,6 +120,14 @@ export default function GradePage() {
             <ArrowRight className="w-4 h-4" />
             <span>بازگشت به پیشخوان</span>
           </Link>
+
+          <button
+            onClick={() => setImportOpen(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 font-bold text-xs sm:text-sm shadow-sm hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:scale-105 active:scale-95 transition-all"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            <span className="hidden sm:inline">بارگذاری اکسل</span>
+          </button>
 
           {/* Add Class Button as explicitly requested */}
           <button
@@ -256,6 +267,13 @@ export default function GradePage() {
           defaultGradeId={grade.id}
         />
       )}
+
+      {/* Bulk Excel Import Modal */}
+      <ExcelImportModal
+        isOpen={importOpen}
+        onClose={() => setImportOpen(false)}
+        onSuccess={loadGradeData}
+      />
     </>
   );
 }
