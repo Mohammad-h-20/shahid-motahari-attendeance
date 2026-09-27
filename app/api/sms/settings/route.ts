@@ -81,6 +81,14 @@ export async function POST(request: Request) {
           if (!baleData.ok) {
              return NextResponse.json({ error: "توکن بله نامعتبر است" }, { status: 400 });
           }
+          // Set Webhook automatically
+          const webhookUrl = new URL(request.url).origin + '/api/bale/webhook';
+          await fetch('https://tapi.bale.ai/bot' + baleBotToken + '/setWebhook', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: webhookUrl })
+          });
+          }
        } catch (e) {
           return NextResponse.json({ error: "خطا در ارتباط با سرور بله" }, { status: 400 });
        }
@@ -122,3 +130,4 @@ export async function POST(request: Request) {
     );
   }
 }
+
