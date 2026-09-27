@@ -18,6 +18,7 @@ model User {
   smsMode               String   @default("NORMAL") // "NORMAL" یا "LOOKUP"
   lookupTemplateAbsent  String?  // نام قالب غیبت در کاوه نگار
   lookupTemplateLate    String?  // نام قالب تاخیر در کاوه نگار
+  baleBotToken          String?  // توکن بازو بله
   createdAt             DateTime @default(now())
 }
 
@@ -59,6 +60,7 @@ model Student {
   nationalId    String?      // کد ملی
   studentNumber String?      // شماره دانش‌آموزی
   phone         String       // شماره همراه ولی / دانش‌آموز
+  baleChatId    String?      // شناسه بازو بله
   classId       String
   class         Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
   attendances   Attendance[]

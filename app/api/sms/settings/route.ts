@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { getKavenegarAccountInfo } from "@/lib/kavenegar";
 
@@ -14,6 +14,7 @@ export async function GET() {
         smsMode: true,
         lookupTemplateAbsent: true,
         lookupTemplateLate: true,
+        baleBotToken: true,
       },
     });
 
@@ -31,20 +32,21 @@ export async function GET() {
     }
 
     return NextResponse.json({
-      configured: !!apiKey,
-      apiKey: user?.kavenegarApiKey ? `${user.kavenegarApiKey.slice(0, 6)}...${user.kavenegarApiKey.slice(-4)}` : "",
+      configured: !!apiKey || !!user?.baleBotToken,
+      apiKey: user?.kavenegarApiKey ? user.kavenegarApiKey.slice(0, 6) + '...' + user.kavenegarApiKey.slice(-4) : "",
       rawApiKey: user?.kavenegarApiKey || "",
       sender: user?.kavenegarSender || "2000660110",
       smsMode: user?.smsMode || "NORMAL",
       lookupTemplateAbsent: user?.lookupTemplateAbsent || "",
       lookupTemplateLate: user?.lookupTemplateLate || "",
+      baleBotToken: user?.baleBotToken || "",
       balanceInfo,
       isConnected,
     });
   } catch (error) {
     console.error("Error fetching SMS settings:", error);
     return NextResponse.json(
-      { error: "خطا در دریافت تنظیمات پیامک" },
+      { error: "خطا در دریافت تنظیمات" },
       { status: 500 }
     );
   }
@@ -59,51 +61,63 @@ export async function POST(request: Request) {
       smsMode = "NORMAL",
       lookupTemplateAbsent,
       lookupTemplateLate,
+      baleBotToken,
     } = body;
 
-    const user = await prisma.user.findFirst({
-      orderBy: { createdAt: "asc" },
-    });
+    const admin = await prisma.user.findFirst({ orderBy: { createdAt: "asc" } });
 
-    if (!user) {
-      return NextResponse.json({ error: "کاربر یافت نشد." }, { status: 404 });
+    if (!admin) {
+      return NextResponse.json(
+        { error: "کاربر مدیر یافت نشد." },
+        { status: 404 }
+      );
     }
 
-    // Optional: test API key with Kavenegar if provided
-    let accountInfo: any = null;
-    if (kavenegarApiKey && kavenegarApiKey.trim()) {
+    // Verify Bale token if provided
+    if (baleBotToken) {
+       try {
+          const baleRes = await fetch('https://tapi.bale.ai/bot' + baleBotToken + '/getMe');
+          const baleData = await baleRes.json();
+          if (!baleData.ok) {
+             return NextResponse.json({ error: "توکن بله نامعتبر است" }, { status: 400 });
+          }
+       } catch (e) {
+          return NextResponse.json({ error: "خطا در ارتباط با سرور بله" }, { status: 400 });
+       }
+    }
+
+    // Validate Kavenegar if provided and not Bale mode
+    if (kavenegarApiKey && smsMode !== "BALE") {
       try {
-        accountInfo = await getKavenegarAccountInfo(kavenegarApiKey.trim());
-      } catch (err: any) {
+        await getKavenegarAccountInfo(kavenegarApiKey);
+      } catch (e: any) {
         return NextResponse.json(
-          {
-            error: `کلید کاوه نگار نامعتبر است: ${err.message || "امکان اتصال وجود ندارد"}`,
-          },
+          { error: "کلید API کاوه نگار نامعتبر است یا ارتباط برقرار نشد." },
           { status: 400 }
         );
       }
     }
 
     await prisma.user.update({
-      where: { id: user.id },
+      where: { id: admin.id },
       data: {
-        kavenegarApiKey: kavenegarApiKey ? kavenegarApiKey.trim() : null,
-        kavenegarSender: kavenegarSender ? kavenegarSender.trim() : null,
-        smsMode,
-        lookupTemplateAbsent: lookupTemplateAbsent ? lookupTemplateAbsent.trim() : null,
-        lookupTemplateLate: lookupTemplateLate ? lookupTemplateLate.trim() : null,
+        kavenegarApiKey: kavenegarApiKey || admin.kavenegarApiKey,
+        kavenegarSender: kavenegarSender || admin.kavenegarSender,
+        smsMode: smsMode,
+        lookupTemplateAbsent: lookupTemplateAbsent !== undefined ? lookupTemplateAbsent : admin.lookupTemplateAbsent,
+        lookupTemplateLate: lookupTemplateLate !== undefined ? lookupTemplateLate : admin.lookupTemplateLate,
+        baleBotToken: baleBotToken !== undefined ? baleBotToken : admin.baleBotToken,
       },
     });
 
     return NextResponse.json({
       success: true,
-      message: "تنظیمات وب‌سرویس کاوه نگار با موفقیت ذخیره و اعتبارسنجی شد.",
-      accountInfo,
+      message: "تنظیمات ارتباطی با موفقیت ذخیره شد.",
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error saving SMS settings:", error);
     return NextResponse.json(
-      { error: error.message || "خطا در ذخیره‌سازی تنظیمات پیامک" },
+      { error: "خطایی رخ داد" },
       { status: 500 }
     );
   }

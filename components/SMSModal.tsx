@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -81,7 +81,7 @@ export default function SMSModal({
   const handleSaveConfig = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!apiKeyInput.trim()) {
-      setError("لطفاً کلید وب‌سرویس کاوه نگار را وارد کنید.");
+      setError("Ù„Ø·ÙØ§Ù‹ Ú©Ù„ÛŒØ¯ ÙˆØ¨â€ŒØ³Ø±ÙˆÛŒØ³ Ú©Ø§ÙˆÙ‡ Ù†Ú¯Ø§Ø± Ø±Ø§ ÙˆØ§Ø±Ø¯ Ú©Ù†ÛŒØ¯.");
       return;
     }
 
@@ -100,12 +100,12 @@ export default function SMSModal({
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "خطا در اتصال به کاوه نگار");
+        throw new Error(data.error || "Ø®Ø·Ø§ Ø¯Ø± Ø§ØªØµØ§Ù„ Ø¨Ù‡ Ú©Ø§ÙˆÙ‡ Ù†Ú¯Ø§Ø±");
       }
 
       setKavenegarConfigured(true);
       setShowConfig(false);
-      setConfigSuccess("کلید کاوه نگار با موفقیت ذخیره و اعتبارسنجی شد!");
+      setConfigSuccess("Ú©Ù„ÛŒØ¯ Ú©Ø§ÙˆÙ‡ Ù†Ú¯Ø§Ø± Ø¨Ø§ Ù…ÙˆÙÙ‚ÛŒØª Ø°Ø®ÛŒØ±Ù‡ Ùˆ Ø§Ø¹ØªØ¨Ø§Ø±Ø³Ù†Ø¬ÛŒ Ø´Ø¯!");
       setTimeout(() => setConfigSuccess(""), 4000);
     } catch (err: any) {
       setError(err.message);
@@ -141,13 +141,13 @@ export default function SMSModal({
         if (data.needConfig) {
           setShowConfig(true);
         }
-        throw new Error(data.error || "خطا در ارسال پیامک");
+        throw new Error(data.error || "Ø®Ø·Ø§ Ø¯Ø± Ø§Ø±Ø³Ø§Ù„ Ù¾ÛŒØ§Ù…Ú©");
       }
 
       setSendResult(data);
       setSent(true);
     } catch (err: any) {
-      setError(err.message || "خطایی در ارسال پیامک رخ داد.");
+      setError(err.message || "Ø®Ø·Ø§ÛŒÛŒ Ø¯Ø± Ø§Ø±Ø³Ø§Ù„ Ù¾ÛŒØ§Ù…Ú© Ø±Ø® Ø¯Ø§Ø¯.");
     } finally {
       setSending(false);
     }
@@ -174,13 +174,13 @@ export default function SMSModal({
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <span>ارسال پیام به اولیا</span>
+                <span>Ø§Ø±Ø³Ø§Ù„ Ù¾ÛŒØ§Ù… Ø¨Ù‡ Ø§ÙˆÙ„ÛŒØ§</span>
                 <span className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-extrabold px-2 py-0.5 rounded-full">
-                  وب‌سرویس کاوه نگار
+                  ÙˆØ¨â€ŒØ³Ø±ÙˆÛŒØ³ Ú©Ø§ÙˆÙ‡ Ù†Ú¯Ø§Ø±
                 </span>
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                ارسال پیامک زنده به تلفن همراه والدین دانش‌آموزان غایب و تاخیری
+                Ø§Ø±Ø³Ø§Ù„ Ù¾ÛŒØ§Ù…Ú© Ø²Ù†Ø¯Ù‡ Ø¨Ù‡ ØªÙ„ÙÙ† Ù‡Ù…Ø±Ø§Ù‡ ÙˆØ§Ù„Ø¯ÛŒÙ† Ø¯Ø§Ù†Ø´â€ŒØ¢Ù…ÙˆØ²Ø§Ù† ØºØ§ÛŒØ¨ Ùˆ ØªØ§Ø®ÛŒØ±ÛŒ
               </p>
             </div>
           </div>
@@ -189,10 +189,10 @@ export default function SMSModal({
             type="button"
             onClick={() => setShowConfig(!showConfig)}
             className="p-2 text-slate-500 hover:text-emerald-600 dark:text-slate-400 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold flex items-center gap-1 transition-colors"
-            title="تنظیمات وب‌سرویس کاوه نگار"
+            title="ØªÙ†Ø¸ÛŒÙ…Ø§Øª ÙˆØ¨â€ŒØ³Ø±ÙˆÛŒØ³ Ú©Ø§ÙˆÙ‡ Ù†Ú¯Ø§Ø±"
           >
             <Settings className="w-4 h-4" />
-            <span className="hidden sm:inline">تنظیم کلید</span>
+            <span className="hidden sm:inline">ØªÙ†Ø¸ÛŒÙ… Ú©Ù„ÛŒØ¯</span>
           </button>
         </div>
 
@@ -205,7 +205,7 @@ export default function SMSModal({
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <Key className="w-4 h-4 text-emerald-600" />
-                <span>تنظیم کلید وب‌سرویس کاوه نگار (API Key)</span>
+                <span>ØªÙ†Ø¸ÛŒÙ… Ú©Ù„ÛŒØ¯ ÙˆØ¨â€ŒØ³Ø±ÙˆÛŒØ³ Ú©Ø§ÙˆÙ‡ Ù†Ú¯Ø§Ø± (API Key)</span>
               </span>
               <a
                 href="https://panel.kavenegar.com"
@@ -213,7 +213,7 @@ export default function SMSModal({
                 rel="noreferrer"
                 className="text-[11px] text-emerald-600 hover:underline flex items-center gap-1"
               >
-                <span>پنل کاوه نگار</span>
+                <span>Ù¾Ù†Ù„ Ú©Ø§ÙˆÙ‡ Ù†Ú¯Ø§Ø±</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
@@ -222,7 +222,7 @@ export default function SMSModal({
               <div className="sm:col-span-2">
                 <input
                   type="text"
-                  placeholder="کلید API را اینجا پیست کنید..."
+                  placeholder="Ú©Ù„ÛŒØ¯ API Ø±Ø§ Ø§ÛŒÙ†Ø¬Ø§ Ù¾ÛŒØ³Øª Ú©Ù†ÛŒØ¯..."
                   value={apiKeyInput}
                   onChange={(e) => setApiKeyInput(e.target.value)}
                   className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 font-mono text-left focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -233,7 +233,7 @@ export default function SMSModal({
               <div>
                 <input
                   type="text"
-                  placeholder="شماره خط (مثال: 2000660110)"
+                  placeholder="Ø´Ù…Ø§Ø±Ù‡ Ø®Ø· (Ù…Ø«Ø§Ù„: 2000660110)"
                   value={senderInput}
                   onChange={(e) => setSenderInput(e.target.value)}
                   className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 font-mono text-left focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -248,7 +248,7 @@ export default function SMSModal({
                 onClick={() => setShowConfig(false)}
                 className="px-3 py-1.5 rounded-xl text-xs text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700"
               >
-                بستن
+                Ø¨Ø³ØªÙ†
               </button>
               <button
                 type="submit"
@@ -256,7 +256,7 @@ export default function SMSModal({
                 className="px-4 py-1.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-colors disabled:opacity-50 flex items-center gap-1.5"
               >
                 {savingKey ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
-                <span>تایید و اتصال به کاوه نگار</span>
+                <span>ØªØ§ÛŒÛŒØ¯ Ùˆ Ø§ØªØµØ§Ù„ Ø¨Ù‡ Ú©Ø§ÙˆÙ‡ Ù†Ú¯Ø§Ø±</span>
               </button>
             </div>
           </form>
@@ -283,15 +283,15 @@ export default function SMSModal({
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <h4 className="text-base font-bold text-slate-900 dark:text-white">
-              پیامک‌ها با موفقیت به سرور کاوه نگار تحویل داده شدند
+              Ù¾ÛŒØ§Ù…Ú©â€ŒÙ‡Ø§ Ø¨Ø§ Ù…ÙˆÙÙ‚ÛŒØª Ø¨Ù‡ Ø³Ø±ÙˆØ± Ú©Ø§ÙˆÙ‡ Ù†Ú¯Ø§Ø± ØªØ­ÙˆÛŒÙ„ Ø¯Ø§Ø¯Ù‡ Ø´Ø¯Ù†Ø¯
             </h4>
             <p className="text-xs text-slate-500 max-w-sm">
-              تعداد {toPersianDigits(sendResult?.successCount || studentsWithIssues.length)} پیامک موفق به شماره همراه اولیای دانش‌آموزان ارسال شد.
+              ØªØ¹Ø¯Ø§Ø¯ {toPersianDigits(sendResult?.successCount || studentsWithIssues.length)} Ù¾ÛŒØ§Ù…Ú© Ù…ÙˆÙÙ‚ Ø¨Ù‡ Ø´Ù…Ø§Ø±Ù‡ Ù‡Ù…Ø±Ø§Ù‡ Ø§ÙˆÙ„ÛŒØ§ÛŒ Ø¯Ø§Ù†Ø´â€ŒØ¢Ù…ÙˆØ²Ø§Ù† Ø§Ø±Ø³Ø§Ù„ Ø´Ø¯.
             </p>
 
             {sendResult?.failedCount > 0 && (
               <p className="text-xs text-rose-500 font-medium">
-                تعداد {toPersianDigits(sendResult.failedCount)} شماره به دلیل خطا یا نامعتبر بودن ارسال نشد.
+                ØªØ¹Ø¯Ø§Ø¯ {toPersianDigits(sendResult.failedCount)} Ø´Ù…Ø§Ø±Ù‡ Ø¨Ù‡ Ø¯Ù„ÛŒÙ„ Ø®Ø·Ø§ ÛŒØ§ Ù†Ø§Ù…Ø¹ØªØ¨Ø± Ø¨ÙˆØ¯Ù† Ø§Ø±Ø³Ø§Ù„ Ù†Ø´Ø¯.
               </p>
             )}
 
@@ -303,7 +303,7 @@ export default function SMSModal({
                 }}
                 className="px-6 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm font-medium hover:bg-slate-800 transition-colors"
               >
-                بستن پنجره
+                Ø¨Ø³ØªÙ† Ù¾Ù†Ø¬Ø±Ù‡
               </button>
             </div>
           </div>
@@ -313,18 +313,18 @@ export default function SMSModal({
               <div className="py-12 text-center text-slate-500 bg-slate-50 dark:bg-slate-800/40 rounded-3xl">
                 <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-2 opacity-80" />
                 <p className="font-bold text-slate-700 dark:text-slate-200 text-sm">
-                  تمامی دانش‌آموزان حاضر هستند!
+                  ØªÙ…Ø§Ù…ÛŒ Ø¯Ø§Ù†Ø´â€ŒØ¢Ù…ÙˆØ²Ø§Ù† Ø­Ø§Ø¶Ø± Ù‡Ø³ØªÙ†Ø¯!
                 </p>
                 <p className="text-xs text-slate-400 mt-1">
-                  هیچ مورد غیبت یا تاخیری برای ارسال پیامک در تاریخ {toPersianDigits(date)} وجود ندارد.
+                  Ù‡ÛŒÚ† Ù…ÙˆØ±Ø¯ ØºÛŒØ¨Øª ÛŒØ§ ØªØ§Ø®ÛŒØ±ÛŒ Ø¨Ø±Ø§ÛŒ Ø§Ø±Ø³Ø§Ù„ Ù¾ÛŒØ§Ù…Ú© Ø¯Ø± ØªØ§Ø±ÛŒØ® {toPersianDigits(date)} ÙˆØ¬ÙˆØ¯ Ù†Ø¯Ø§Ø±Ø¯.
                 </p>
               </div>
             ) : (
               <>
                 <div className="text-xs text-slate-500 flex items-center justify-between flex-shrink-0">
-                  <span>لیست دانش‌آموزان نیازمند اطلاع‌رسانی:</span>
+                  <span>Ù„ÛŒØ³Øª Ø¯Ø§Ù†Ø´â€ŒØ¢Ù…ÙˆØ²Ø§Ù† Ù†ÛŒØ§Ø²Ù…Ù†Ø¯ Ø§Ø·Ù„Ø§Ø¹â€ŒØ±Ø³Ø§Ù†ÛŒ:</span>
                   <span className="font-bold text-amber-600">
-                    {toPersianDigits(studentsWithIssues.length)} مورد غایب یا دارای تاخیر
+                    {toPersianDigits(studentsWithIssues.length)} Ù…ÙˆØ±Ø¯ ØºØ§ÛŒØ¨ ÛŒØ§ Ø¯Ø§Ø±Ø§ÛŒ ØªØ§Ø®ÛŒØ±
                   </span>
                 </div>
 
@@ -339,11 +339,11 @@ export default function SMSModal({
                           <span>{s.firstName} {s.lastName}</span>
                           {s.status === "ABSENT" ? (
                             <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-950/60 text-rose-600 font-medium">
-                              <AlertTriangle className="w-3 h-3" /> غایب
+                              <AlertTriangle className="w-3 h-3" /> ØºØ§ÛŒØ¨
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/60 text-amber-600 font-medium">
-                              <Clock className="w-3 h-3" /> تاخیر ({toPersianDigits(s.delayMinutes || 0)} دقیقه)
+                              <Clock className="w-3 h-3" /> ØªØ§Ø®ÛŒØ± ({toPersianDigits(s.delayMinutes || 0)} Ø¯Ù‚ÛŒÙ‚Ù‡)
                             </span>
                           )}
                         </div>
@@ -353,8 +353,8 @@ export default function SMSModal({
                       </div>
                       <p className="text-xs text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900/80 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 leading-relaxed">
                         {s.status === "ABSENT"
-                          ? `«ولی محترم ${s.firstName} ${s.lastName}، به اطلاع می‌رساند فرزند شما در تاریخ ${toPersianDigits(date)} در کلاس ${classNameTitle} دبیرستان دخترانه شهید مطهری غایب بوده است.»`
-                          : `«ولی محترم ${s.firstName} ${s.lastName}، به اطلاع می‌رساند فرزند شما در تاریخ ${toPersianDigits(date)} با ${toPersianDigits(s.delayMinutes || 0)} دقیقه تاخیر در کلاس حضور یافت.»`}
+                          ? `Â«ÙˆÙ„ÛŒ Ù…Ø­ØªØ±Ù… ${s.firstName} ${s.lastName}ØŒ Ø¨Ù‡ Ø§Ø·Ù„Ø§Ø¹ Ù…ÛŒâ€ŒØ±Ø³Ø§Ù†Ø¯ ÙØ±Ø²Ù†Ø¯ Ø´Ù…Ø§ Ø¯Ø± ØªØ§Ø±ÛŒØ® ${toPersianDigits(date)} Ø¯Ø± Ú©Ù„Ø§Ø³ ${classNameTitle} Ø¯Ø¨ÛŒØ±Ø³ØªØ§Ù† Ø¯Ø®ØªØ±Ø§Ù†Ù‡ Ø´Ù‡ÛŒØ¯ Ù…Ø·Ù‡Ø±ÛŒ ØºØ§ÛŒØ¨ Ø¨ÙˆØ¯Ù‡ Ø§Ø³Øª.Â»`
+                          : `Â«ÙˆÙ„ÛŒ Ù…Ø­ØªØ±Ù… ${s.firstName} ${s.lastName}ØŒ Ø¨Ù‡ Ø§Ø·Ù„Ø§Ø¹ Ù…ÛŒâ€ŒØ±Ø³Ø§Ù†Ø¯ ÙØ±Ø²Ù†Ø¯ Ø´Ù…Ø§ Ø¯Ø± ØªØ§Ø±ÛŒØ® ${toPersianDigits(date)} Ø¨Ø§ ${toPersianDigits(s.delayMinutes || 0)} Ø¯Ù‚ÛŒÙ‚Ù‡ ØªØ§Ø®ÛŒØ± Ø¯Ø± Ú©Ù„Ø§Ø³ Ø­Ø¶ÙˆØ± ÛŒØ§ÙØª.Â»`}
                       </p>
                     </div>
                   ))}
@@ -363,7 +363,7 @@ export default function SMSModal({
                 <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 flex-shrink-0">
                   <div className="text-[11px] text-slate-400 flex items-center gap-1">
                     <span className={`w-2 h-2 rounded-full ${kavenegarConfigured ? "bg-emerald-500" : "bg-amber-400 animate-pulse"}`}></span>
-                    <span>{kavenegarConfigured ? "وب‌سرویس کاوه نگار فعال است" : "کلید کاوه نگار هنوز تنظیم نشده است"}</span>
+                    <span>{kavenegarConfigured ? "ÙˆØ¨â€ŒØ³Ø±ÙˆÛŒØ³ Ú©Ø§ÙˆÙ‡ Ù†Ú¯Ø§Ø± ÙØ¹Ø§Ù„ Ø§Ø³Øª" : "Ú©Ù„ÛŒØ¯ Ú©Ø§ÙˆÙ‡ Ù†Ú¯Ø§Ø± Ù‡Ù†ÙˆØ² ØªÙ†Ø¸ÛŒÙ… Ù†Ø´Ø¯Ù‡ Ø§Ø³Øª"}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -372,7 +372,7 @@ export default function SMSModal({
                       onClick={onClose}
                       className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs font-semibold"
                     >
-                      انصراف
+                      Ø§Ù†ØµØ±Ø§Ù
                     </button>
                     <button
                       type="button"
@@ -383,12 +383,12 @@ export default function SMSModal({
                       {sending ? (
                         <>
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          <span>در حال ارسال پیامک‌ها...</span>
+                          <span>Ø¯Ø± Ø­Ø§Ù„ Ø§Ø±Ø³Ø§Ù„ Ù¾ÛŒØ§Ù…Ú©â€ŒÙ‡Ø§...</span>
                         </>
                       ) : (
                         <>
                           <Send className="w-3.5 h-3.5" />
-                          <span>ارسال واقعی پیامک‌ها</span>
+                          <span>Ø§Ø±Ø³Ø§Ù„ ÙˆØ§Ù‚Ø¹ÛŒ Ù¾ÛŒØ§Ù…Ú©â€ŒÙ‡Ø§</span>
                         </>
                       )}
                     </button>
@@ -402,3 +402,4 @@ export default function SMSModal({
     </div>
   );
 }
+
